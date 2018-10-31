@@ -66,7 +66,20 @@ namespace Stubble.Core.Renderers.StringRenderer.TokenRenderers
 
                 renderer.Render(context.RendererSettings.Parser.Parse(value.ToString(), obj.Tags), context);
             }
-            else if (value is IDictionary || value != null)
+            else if (value is IDictionary)
+            {
+                IDictionary dictValue = value as IDictionary;
+
+                bool bIsFirst = true;
+                int i = dictValue.Count;
+                foreach (DictionaryEntry v in dictValue)
+                {
+                    renderer.Render(obj, context.Push(new { Name = v.Key, Value = v.Value, IsFirst = bIsFirst, IsLast = i == 1}));
+                    bIsFirst = false;
+                    --i;
+                }
+            }
+            else if (value != null)
             {
                 renderer.Render(obj, context.Push(value));
             }
@@ -113,7 +126,20 @@ namespace Stubble.Core.Renderers.StringRenderer.TokenRenderers
 
                 await renderer.RenderAsync(context.RendererSettings.Parser.Parse(value.ToString(), obj.Tags), context);
             }
-            else if (value is IDictionary || value != null)
+            else if (value is IDictionary)
+            {
+                IDictionary dictValue = value as IDictionary;
+
+                bool bIsFirst = true;
+                int i = dictValue.Count;
+                foreach (DictionaryEntry v in dictValue)
+                {
+                    await renderer.RenderAsync(obj, context.Push(new { Name = v.Key, Value = v.Value, IsFirst = bIsFirst, IsLast = i == 1 }));
+                    bIsFirst = false;
+                    --i;
+                }
+            }
+            else
             {
                 await renderer.RenderAsync(obj, context.Push(value));
             }
